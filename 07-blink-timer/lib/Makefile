@@ -10,7 +10,7 @@ CFLAGS +=  $(MCU_CC_FLAGS)
 #CFLAGS += -ffreestanding -nostdlib
 CFLAGS += -Iinc -Iinc/core -Iinc/peripherals
 
-SRCS = system_stm32l1xx.c stm32l1xx_tim.c stm32l1xx_gpio.c stm32l1xx_rcc.c misc.c stm32l1xx_syscfg.c startup_stm32l1xx_md.c
+SRCS = misc.c stm32l1xx_syscfg.c startup_stm32l1xx_md.c system_stm32l1xx.c stm32l1xx_tim.c stm32l1xx_dma.c stm32l1xx_adc.c stm32l1xx_gpio.c stm32l1xx_rcc.c
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: libstm32l1.a
