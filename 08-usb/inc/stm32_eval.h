@@ -143,28 +143,35 @@ typedef enum
  //#define USE_STM3210B_EVAL
  //#define USE_STM3210E_EVAL
  //#define USE_STM3210C_EVAL
- //#define USE_STM32L152_EVAL
+ #define USE_STM32L152_EVAL
  //#define USE_STM32100E_EVAL
 #endif
 
 #ifdef USE_STM32100B_EVAL
  #include "stm32f10x.h"
- #include "stm32100b_eval/stm32100b_eval.h"
+ #include "stm32100b_eval.h"
 #elif defined USE_STM3210B_EVAL
  #include "stm32f10x.h"
- #include "stm3210b_eval/stm3210b_eval.h" 
+ #include "stm3210b_eval.h" 
 #elif defined USE_STM3210E_EVAL
  #include "stm32f10x.h"
- #include "stm3210e_eval/stm3210e_eval.h"
+ #include "stm3210e_eval.h"
 #elif defined USE_STM3210C_EVAL
  #include "stm32f10x.h"
- #include "stm3210c_eval/stm3210c_eval.h"
+ #include "stm3210c_eval.h"
 #elif defined USE_STM32L152_EVAL
  #include "stm32l1xx.h"
- #include "stm32l152_eval/stm32l152_eval.h" 
+ #include "stm32l152_eval.h" 
+ #include "stm32l1xx_gpio.h"
+ #include "stm32l1xx_rcc.h"
+ #include "stm32l1xx_exti.h"
+ #include "stm32l1xx_syscfg.h"
+ #include "stm32l1xx_dma.h"
+ #include "stm32l1xx_adc.h"
+ #include "misc.h"
 #elif defined USE_STM32100E_EVAL
  #include "stm32f10x.h"
- #include "stm32100e_eval/stm32100e_eval.h" 
+ #include "stm32100e_eval.h" 
 #else 
  #error "Please select first the STM32 EVAL board to be used (in stm32_eval.h)"
 #endif                      

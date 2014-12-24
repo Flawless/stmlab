@@ -1,9 +1,9 @@
 /******************** (C) COPYRIGHT 2011 STMicroelectronics ********************
-* File Name          : main.c
+* File Name          : usb_mem.c
 * Author             : MCD Application Team
 * Version            : V3.3.0
 * Date               : 21-March-2011
-* Description        : Custom HID demo main file
+* Description        : Utility functions for memory transfers to/from PMA
 ********************************************************************************
 * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
 * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
@@ -12,83 +12,64 @@
 * CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
 * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
 *******************************************************************************/
+#ifndef STM32F10X_CL
 
 /* Includes ------------------------------------------------------------------*/
-#ifdef STM32L1XX_MD
-#include "stm32l1xx.h"
-#else
-#include "stm32f10x.h"
-#endif /* STM32L1XX_MD */
- 
 #include "usb_lib.h"
-#include "hw_config.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Extern variables ----------------------------------------------------------*/
-__IO uint8_t PrevXferComplete = 1;
-
 /* Private function prototypes -----------------------------------------------*/
-void Delay(__IO uint32_t nCount);
-
 /* Private functions ---------------------------------------------------------*/
-
 /*******************************************************************************
-* Function Name  : main.
-* Description    : main routine.
-* Input          : None.
+* Function Name  : UserToPMABufferCopy
+* Description    : Copy a buffer from user memory area to packet memory area (PMA)
+* Input          : - pbUsrBuf: pointer to user memory area.
+*                  - wPMABufAddr: address into PMA.
+*                  - wNBytes: no. of bytes to be copied.
+* Output         : None.
+* Return         : None	.
+*******************************************************************************/
+void UserToPMABufferCopy(uint8_t *pbUsrBuf, uint16_t wPMABufAddr, uint16_t wNBytes)
+{
+  uint32_t n = (wNBytes + 1) >> 1;   /* n = (wNBytes + 1) / 2 */
+  uint32_t i, temp1, temp2;
+  uint16_t *pdwVal;
+  pdwVal = (uint16_t *)(wPMABufAddr * 2 + PMAAddr);
+  for (i = n; i != 0; i--)
+  {
+    temp1 = (uint16_t) * pbUsrBuf;
+    pbUsrBuf++;
+    temp2 = temp1 | (uint16_t) * pbUsrBuf << 8;
+    *pdwVal++ = temp2;
+    pdwVal++;
+    pbUsrBuf++;
+  }
+}
+/*******************************************************************************
+* Function Name  : PMAToUserBufferCopy
+* Description    : Copy a buffer from user memory area to packet memory area (PMA)
+* Input          : - pbUsrBuf    = pointer to user memory area.
+*                  - wPMABufAddr = address into PMA.
+*                  - wNBytes     = no. of bytes to be copied.
 * Output         : None.
 * Return         : None.
 *******************************************************************************/
-int main(void)
+void PMAToUserBufferCopy(uint8_t *pbUsrBuf, uint16_t wPMABufAddr, uint16_t wNBytes)
 {
-  Set_System();
-
-  USB_Interrupts_Config();
-
-  Set_USBClock();
-
-  USB_Init();
-
-  while (1)
+  uint32_t n = (wNBytes + 1) >> 1;/* /2*/
+  uint32_t i;
+  uint32_t *pdwVal;
+  pdwVal = (uint32_t *)(wPMABufAddr * 2 + PMAAddr);
+  for (i = n; i != 0; i--)
   {
+    *(uint16_t*)pbUsrBuf++ = *pdwVal++;
+    pbUsrBuf++;
   }
 }
 
-/*******************************************************************************
-* Function Name  : Delay
-* Description    : Inserts a delay time.
-* Input          : nCount: specifies the delay time length.
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void Delay(__IO uint32_t nCount)
-{
-  for(; nCount!= 0;nCount--);
-}
-
-#ifdef  USE_FULL_ASSERT
-/*******************************************************************************
-* Function Name  : assert_failed
-* Description    : Reports the name of the source file and the source line number
-*                  where the assert_param error has occurred.
-* Input          : - file: pointer to the source file name
-*                  - line: assert_param error line source number
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void assert_failed(uint8_t* file, uint32_t line)
-{ 
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-  /* Infinite loop */
-  while(1)
-  {
-  }
-}
-#endif
-
+#endif /* STM32F10X_CL */
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

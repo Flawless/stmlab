@@ -46,7 +46,7 @@ lib:
 proj: 	$(OUTPATH)/$(PROJECT).elf
 
 $(OUTPATH)/$(PROJECT).elf: $(SRCS)
-	$(CC) $(CFLAGS) $^ -o $@ -lstm32l1 -lm $(OPTIMIZATION_LEVEL) -Tstm32_flash.ld # -Dstm32l152rb.ld -Tstm32l152rb.ld #
+	$(CC) $(CFLAGS) $^ -o $@  -lm $(OPTIMIZATION_LEVEL) -Tstm32_flash.ld # -Dstm32l152rb.ld -Tstm32l152rb.ld #
 	$(OBJCOPY) -O ihex $(OUTPATH)/$(PROJECT).elf $(OUTPATH)/$(PROJECT).hex
 	$(OBJCOPY) -O binary $(OUTPATH)/$(PROJECT).elf $(OUTPATH)/$(PROJECT).bin
 
