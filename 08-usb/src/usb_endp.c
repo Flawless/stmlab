@@ -1,9 +1,9 @@
 /******************** (C) COPYRIGHT 2011 STMicroelectronics ********************
-* File Name          : main.c
+* File Name          : usb_endp.c
 * Author             : MCD Application Team
 * Version            : V3.3.0
 * Date               : 21-March-2011
-* Description        : Custom HID demo main file
+* Description        : Endpoint routines
 ********************************************************************************
 * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
 * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
@@ -15,75 +15,111 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l1xx.h"
+
+#include "platform_config.h"
 #include "usb_lib.h"
-#include "hw_config.h"
+#include "usb_istr.h"
+#include "stm32_eval.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-/* Extern variables ----------------------------------------------------------*/
-__IO uint8_t PrevXferComplete = 1;
+uint8_t Receive_Buffer[2];
+extern __IO uint8_t PrevXferComplete;
 
 /* Private function prototypes -----------------------------------------------*/
-void Delay(__IO uint32_t nCount);
-
 /* Private functions ---------------------------------------------------------*/
-
 /*******************************************************************************
-* Function Name  : main.
-* Description    : main routine.
+* Function Name  : EP1_OUT_Callback.
+* Description    : EP1 OUT Callback Routine.
 * Input          : None.
 * Output         : None.
 * Return         : None.
 *******************************************************************************/
-int main(void)
+void EP1_OUT_Callback(void)
 {
-  Set_System();
+  BitAction Led_State;
 
-  USB_Interrupts_Config();
-
-  Set_USBClock();
-
-  USB_Init();
-
-  while (1)
+  /* Read received data (2 bytes) */  
+  USB_SIL_Read(EP1_OUT, Receive_Buffer);
+  
+  if (Receive_Buffer[1] == 0)
   {
+    Led_State = Bit_RESET;
   }
+  else 
+  {
+    Led_State = Bit_SET;
+  }
+ 
+ 
+  switch (Receive_Buffer[0])
+  {
+    case 1: /* Led 1 */
+     if (Led_State != Bit_RESET)
+     {
+       STM_EVAL_LEDOn(LED1);
+     }
+     else
+     {
+       STM_EVAL_LEDOff(LED1);
+     }
+     break;
+    case 2: /* Led 2 */
+     if (Led_State != Bit_RESET)
+     {
+       STM_EVAL_LEDOn(LED2);
+     }
+     else
+     {
+       STM_EVAL_LEDOff(LED2);
+     }
+      break;
+    case 3: /* Led 3 */
+     if (Led_State != Bit_RESET)
+     {
+       STM_EVAL_LEDOn(LED3);
+     }
+     else
+     {
+       STM_EVAL_LEDOff(LED3);
+     }
+      break;
+    case 4: /* Led 4 */
+     if (Led_State != Bit_RESET)
+     {
+       STM_EVAL_LEDOn(LED4);
+     }
+     else
+     {
+       STM_EVAL_LEDOff(LED4);
+     }
+      break;
+  default:
+    STM_EVAL_LEDOff(LED1);
+    STM_EVAL_LEDOff(LED2);
+    STM_EVAL_LEDOff(LED3);
+    STM_EVAL_LEDOff(LED4); 
+    break;
+  }
+ 
+#ifndef STM32F10X_CL   
+  SetEPRxStatus(ENDP1, EP_RX_VALID);
+#endif /* STM32F10X_CL */
+ 
 }
 
 /*******************************************************************************
-* Function Name  : Delay
-* Description    : Inserts a delay time.
-* Input          : nCount: specifies the delay time length.
-* Output         : None
-* Return         : None
+* Function Name  : EP1_IN_Callback.
+* Description    : EP1 IN Callback Routine.
+* Input          : None.
+* Output         : None.
+* Return         : None.
 *******************************************************************************/
-void Delay(__IO uint32_t nCount)
+void EP1_IN_Callback(void)
 {
-  for(; nCount!= 0;nCount--);
+  PrevXferComplete = 1;
 }
-
-#ifdef  USE_FULL_ASSERT
-/*******************************************************************************
-* Function Name  : assert_failed
-* Description    : Reports the name of the source file and the source line number
-*                  where the assert_param error has occurred.
-* Input          : - file: pointer to the source file name
-*                  - line: assert_param error line source number
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void assert_failed(uint8_t* file, uint32_t line)
-{ 
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-  /* Infinite loop */
-  while(1)
-  {
-  }
-}
-#endif
-
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
+
