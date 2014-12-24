@@ -5,7 +5,7 @@ vpath %.c src usb/src
 
 CFLAGS  = -O2  -Wall
 CFLAGS += -fno-common -fmessage-length=0 -fno-exceptions -ffunction-sections -fdata-sections
-CFLAGS +=  $(MCU_CC_FLAGS)
+CFLAGS +=  $(MCU_CC_FLAGS) $(DEBUG)
 
 #CFLAGS += -ffreestanding -nostdlib
 CFLAGS += -Iinc -Iinc/core -Iusb/inc $(TARGET)

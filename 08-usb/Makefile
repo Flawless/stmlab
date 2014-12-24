@@ -25,7 +25,8 @@ CC_DEBUG_FLAGS =
 #
 INCLUDE_PATHS = $(PROJECT_INC_PATHS)
 LIBRARY_PATHS = $(PROJECT_LIB_PATHS)
-CFLAGS = $(MCU_CC_FLAGS) $(CC_OPTIM_FLAGS) $(CC_DEBUG_FLAGS) $(PROJECT_LIB_PATHS) $(PROJECT_INC_PATHS) $(TARGET) -fno-common -fmessage-length=0 -Wall -fno-exceptions -ffunction-sections -fdata-sections -mlittle-endian
+DEBUG = -O0
+CFLAGS = $(MCU_CC_FLAGS) $(CC_OPTIM_FLAGS) $(CC_DEBUG_FLAGS) $(PROJECT_LIB_PATHS) $(PROJECT_INC_PATHS) $(TARGET) -fno-common -fmessage-length=0 -Wall -fno-exceptions -ffunction-sections -fdata-sections -mlittle-endian $(DEBUG)
 LD_FLAGS = $(MCU_CC_FLAGS) $(MCU_LD_FLAGS) -Wl,--gc-sections $(SYS_LD_FLAGS) -Wl,-Map=$(PROJECT).map
 LD_SYS_LIBS = $(SYS_LIBRARIES)
 
@@ -41,7 +42,7 @@ clean:
 	rm -f $(OUTPATH)/*
 	$(MAKE) -C lib clean
 lib:
-	$(MAKE) -C lib PREFIX=$(PREFIX) MCU_CC_FLAGS="$(MCU_CC_FLAGS)" TARGET=$(TARGET)
+	$(MAKE) -C lib PREFIX=$(PREFIX) MCU_CC_FLAGS="$(MCU_CC_FLAGS)" TARGET=$(TARGET) DEBUG=$(DEBUG)
 
 proj: 	$(OUTPATH)/$(PROJECT).elf
 
