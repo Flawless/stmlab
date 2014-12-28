@@ -124,6 +124,16 @@ void Set_USBClock(void)
 {
 #ifdef STM32L1XX_MD
   /* Enable USB clock */
+
+  //RCC->CR   &=~RCC_CR_PLLON; // Остановить PLL.
+  //while ((RCC->CR & RCC_CR_PLLRDY)!=0) {} // Ожидание готовности PLL.
+  //RCC->CFGR &=~(RCC_CFGR_PPRE1_DIV1); // Предочистка делителя HSE.
+  //RCC->CFGR |= RCC_CFGR_PPRE1_DIV1; // Делить частоту HSE на 4.
+  RCC->CFGR &=~((RCC_CFGR_PLLSRC|RCC_CFGR_PLLMUL|RCC_CFGR_PLLDIV)); // Предочистка.
+  RCC->CFGR |= RCC_CFGR_PLLSRC_HSI; // Тактировать PLL от HSE/PREDIV1.
+  RCC->CFGR |= RCC_CFGR_PLLMUL6; // Умножать частоту на PLL_MUL.
+  RCC->CR   |= RCC_CR_PLLON; // Запустить PLL.
+
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USB, ENABLE);
   
 #elif defined(STM32F10X_CL)  
