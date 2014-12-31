@@ -15,22 +15,32 @@
 //void _init();
 void init_timer();
 void init_leds();
+void delay(uint32_t nCount);
 //void init_adc();
 //void init_dma();
 //uint32_t ADC_Result;
+
+void delay(__IO uint32_t nCount) {
+
+  while (nCount--) {
+
+  }
+
+}
 
 int main(void) {
   //FLASH->ACR |= FLASH_ACR_PRFTEN;
   //FLASH->ACR |= FLASH_ACR_LATENCY; // Если 48< SystemCoreClock <= 72, пропускать 2 такта.
 
-  PWR->CR |= PWR_CR_VOS_0;
-  PWR->CR &=~PWR_CR_VOS_1; 
+  //PWR->CR |= PWR_CR_VOS_0;
+  //PWR->CR &=~PWR_CR_VOS_1; 
   //FLASH->ACR &= ~FLASH_ACR_LATENCY); // Предочистка.
   //FLASH->ACR |= FLASH_ACR_LATENCY_0; // Если SystemCoreClock <= 24 МГц, без пропусков.
   //FLASH->ACR |= FLASH_ACR_LATENCY_1; // Если 24< SystemCoreClock <= 48, пропускать 1 такт.
 
-  //RCC_HSICmd(ENABLE);
-  //while (RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
+  RCC_HSICmd(ENABLE);
+  while (RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
+  RCC_HCLKConfig(RCC_SYSCLKSource_HSE);
   //  *(__IO uint32_t *) RCC_CR_HSEON = (uint32_t)DISABLE; 
   //while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) == RESET);
   //RCC_PLLCmd(DISABLE);
@@ -43,22 +53,27 @@ int main(void) {
   
   //  while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) != RESET);
 
-  RCC->CR|=RCC_CR_HSION; // Включить генератор HSE.
+  /* RCC->CFGR &=~RCC_CFGR_SW; // Очистить биты SW0, SW1. */
+  /* RCC->CFGR |= RCC_CFGR_SW_HSE; // Выбрать HSE для тактирования SW0=1. */
+
+  RCC->CR|=RCC_CR_HSEON; // Включить генератор HSE.
   while (!(RCC->CR & RCC_CR_HSIRDY)) {}; // Ожидание готовности HSE.
-  RCC->CFGR &=~RCC_CFGR_SW; // Очистить биты SW0, SW1.
-  RCC->CFGR |= RCC_CFGR_SW_HSI; // Выбрать HSE для тактирования SW0=1.
+  //RCC->CFGR &=~RCC_CFGR_SW; // Очистить биты SW0, SW1.
+  //RCC->CFGR |= RCC_CFGR_SW_HSI; // Выбрать HSE для тактирования SW0=1.
 
-  //RCC->CR|=RCC_CR_CSSON; 
+  RCC->CR|=RCC_CR_CSSON; 
 
-  RCC->CR   &=~RCC_CR_PLLON; // Остановить PLL.
-  while ((RCC->CR & RCC_CR_PLLRDY)!=0) {} // Ожидание готовности PLL.
-  //RCC->CFGR &=~(RCC_CFGR_PPRE1_DIV1); // Предочистка делителя HSE.
-  //RCC->CFGR |= RCC_CFGR_PPRE1_DIV1; // Делить частоту HSE на 4.
-  RCC->CFGR &=~((RCC_CFGR_PLLSRC|RCC_CFGR_PLLMUL|RCC_CFGR_PLLDIV)); // Предочистка.
-  RCC->CFGR |= RCC_CFGR_PLLSRC_HSI; // Тактировать PLL от HSE/PREDIV1.
-  RCC->CFGR |= RCC_CFGR_PLLMUL6; // Умножать частоту на PLL_MUL.
-  RCC->CR   |= RCC_CR_PLLON; // Запустить PLL.
-  while ((RCC->CR & RCC_CR_PLLRDY)==0) {} // Ожидание готовности PLL.
+  //while (!(RCC->CR & RCC_CR_HSERDY)) {}; // Ожидание готовности HSE.
+
+  /* RCC->CR   &=~RCC_CR_PLLON; // Остановить PLL. */
+  /* while ((RCC->CR & RCC_CR_PLLRDY)!=0) {} // Ожидание готовности PLL. */
+  /* //RCC->CFGR &=~(RCC_CFGR_PPRE1_DIV1); // Предочистка делителя HSE. */
+  /* //RCC->CFGR |= RCC_CFGR_PPRE1_DIV1; // Делить частоту HSE на 4. */
+  /* RCC->CFGR &=~((RCC_CFGR_PLLSRC|RCC_CFGR_PLLMUL|RCC_CFGR_PLLDIV)); // Предочистка. */
+  /* RCC->CFGR |= RCC_CFGR_PLLSRC_HSI; // Тактировать PLL от HSE/PREDIV1. */
+  /* RCC->CFGR |= RCC_CFGR_PLLMUL6; // Умножать частоту на PLL_MUL. */
+  /* RCC->CR   |= RCC_CR_PLLON; // Запустить PLL. */
+  /* while ((RCC->CR & RCC_CR_PLLRDY)==0) {} // Ожидание готовности PLL. */
   //RCC->CFGR &=~RCC_CFGR_SW; // Очистить биты SW0, SW1.
   //RCC->CFGR |= RCC_CFGR_SW_PLL; // Тактирование с выхода PLL.
   //while ((RCC->CFGR&(uint32_t)RCC_CFGR_SWS)!=(uint32_t)RCC_CFGR_SWS_PLL) {} // Ожидание переключения на PLL.
@@ -72,24 +87,31 @@ int main(void) {
   //RCC_PLLCmd(ENABLE);
   //while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
   /* Set HSI as sys clock*/
-  //RCC_HCLKConfig(RCC_SYSCLKSource_HSE);
 
   RCC_PCLK1Config(RCC_HCLK_Div1); 
   init_leds();
-  GPIO_SetBits(GPIOB, GPIO_Pin_7);
-  GPIO_ResetBits(GPIOB, GPIO_Pin_6);
+  GPIO_SetBits(GPIOB, GPIO_Pin_6);
+  GPIO_ResetBits(GPIOB, GPIO_Pin_7);
   
   
   init_timer();
+  //RCC->CR|=RCC_CR_HSEON; // Включить генератор HSE.
 
-  do __NOP(); while (1);
+  do
+  {
+    __NOP();
+    //GPIO_Write(GPIOB, GPIO_ReadOutputData(GPIOB) ^ (GPIO_Pin_6));
+    //delay(1000000);
+  }
+  while(1);
+  //__NOP(); while (1);
 }
 
 void NMI_Handler(void)  // Обработчик NMI вызывается при сбое HSE.
 {
   /* Сбросить флаг системы контроля CSS */
   if (RCC->CIR & RCC_CIR_CSSF) RCC->CIR|=RCC_CIR_CSSC;
-  GPIO_Write(GPIOB, GPIO_ReadOutputData(GPIOB) ^ (GPIO_Pin_6));
+  GPIO_Write(GPIOB, GPIO_ReadOutputData(GPIOB) ^ (GPIO_Pin_7));
 }
 
 
@@ -167,7 +189,7 @@ void init_timer()
   TIM_TimeBaseInitTypeDef TIM_BaseInitStructure;
   TIM_TimeBaseStructInit(&TIM_BaseInitStructure);
 
-  TIM_BaseInitStructure.TIM_Prescaler = (16000000/1000) - 1;
+  TIM_BaseInitStructure.TIM_Prescaler = (1600000/1000) - 1;
   TIM_BaseInitStructure.TIM_Period = 1000;
   TIM_BaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM6, &TIM_BaseInitStructure);
@@ -182,7 +204,7 @@ void init_timer()
 void TIM6_IRQHandler()
 {
   TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
-  GPIO_Write(GPIOB, GPIO_ReadOutputData(GPIOB) ^ (GPIO_Pin_7));
+  GPIO_Write(GPIOB, GPIO_ReadOutputData(GPIOB) ^ (GPIO_Pin_6));
 }
 
 
