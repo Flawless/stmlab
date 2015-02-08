@@ -1,16 +1,8 @@
-/* #include <stdio.h> */
-/* #include <stdlib.h> */
-/* #include <stdint.h> */
-/* #include <math.h> */
 #include "stm32l1xx.h"
 #include "stm32l1xx_rcc.h"
 #include "stm32l1xx_gpio.h"
-// #include "stm32f4xx_conf.h"
-// #include "utils.h"
 
 void Delay(__IO uint32_t nCount);
-//void _init();
-
 
 int main(void) {
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -29,13 +21,11 @@ int main(void) {
   
   while (1) {
     GPIO_ResetBits(GPIOB, GPIO_Pin_7);
-    /* Delay(100000);*/
     GPIO_SetBits(GPIOB, GPIO_Pin_6);
     Delay(100000);
     GPIO_ResetBits(GPIOB, GPIO_Pin_6);
-    // Delay(100000);
     GPIO_SetBits(GPIOB, GPIO_Pin_7);
-    Delay(200000);
+    Delay(100000);
   }
 
 
@@ -45,11 +35,3 @@ int main(void) {
 void Delay(__IO uint32_t nCount) {
   while(nCount--){}
 }
-
-/*
- * Dummy function to avoid compiler error
- */
-//void _init() {
-//
-//}
-
