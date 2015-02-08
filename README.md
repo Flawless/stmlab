@@ -1,1 +1,1 @@
-2
+Master branch contents only tested code. It can be used for project templates. All untested code must stay in development branch.
